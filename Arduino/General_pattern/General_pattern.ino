@@ -3,18 +3,16 @@
 #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
 #endif
 
-//HALO
-
 Adafruit_NeoPixel pixels(88, 6, NEO_GRB + NEO_KHZ800); //(NUMPIXELS, PIN).
 
-#define DELAYVAL 50 // Time (in milliseconds) to pause between pixels
+#define DELAYVAL 200 // Time (in milliseconds) to pause between pixels
 
 //Lists for rows:
 int pixel[] = {0,2,4,6,8,10,11,13,15,17,19,21,22,24,26,28,30,32,33,35,37,39,41,43,44,46,48,50,52,54,55,57,59,61,63,65,66,68,70,72,74,76,77,79,81,83,85,87};
 
+int pixel_list[] = {0,2,4,6,8,10,11,13,15,17,19,21,22,24,26,28,30,32,33,35,37,39,41,43,44,46,48,50,52,54,55,57,59,61,63,65,66,68,70,72,74,76,77,79,81,83,85,87};
 
 void randomize_pixels(){
-  int pixel_list[] = {0,2,4,6,8,10,11,13,15,17,19,21,22,24,26,28,30,32,33,35,37,39,41,43,44,46,48,50,52,54,55,57,59,61,63,65,66,68,70,72,74,76,77,79,81,83,85,87};
   const int pixelCount = sizeof pixel_list / sizeof pixel_list[0];
   for (int i=0; i < pixelCount; i++) {
      int n = random(0, pixelCount);  // Integer from 0 to questionCount-1
@@ -65,6 +63,7 @@ void setup() {
   pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
   Serial.begin(9600);
   Serial.println("test");
+  randomize_pixels();
 }
 
 void loop() {
@@ -73,18 +72,21 @@ void loop() {
   //pixels.show();
   //lightSpiral(blue);
   //lightSpiral(none);
-  lightCircle(green);
-  lightCircle(none);
-  //flashAll(green);
-  //flashAll(none);
+//  lightCircle(green);
+//  lightCircle(none);
+//  flashAll(pink);
+//  flashAll(none);
   //int rand_led = pixel[random(0,48)];
   //chooseLed(rand_led,green);
   //chooseLed(rand_led,none);
+  zoomInOut(blue);
+  zoomInOut(green);
+  zoomInOut(red);
 }
 
 void flashAll(uint32_t color){
-  for (int i=0; i < sizeof(pixel)/sizeof(pixel[0]); i++){
-    chooseLed(pixel[i],color);
+  for (int i=0; i < sizeof(pixel_list)/sizeof(pixel_list[0]); i++){
+    chooseLed(pixel_list[i],color);
     delay(DELAYVAL);
     }
   }
@@ -142,6 +144,47 @@ void flashAll(uint32_t color){
       pixels.setBrightness(50);
       pixels.show();   // Send the updated pixel colors to the hardware.
       delay(DELAYVAL); // Pause before next pass through loop
+    }
+  }
+
+  void zoomOutIn(uint32_t color){
+     for (int i = 0; i < (sizeof(circle)/sizeof(circle[0])); i ++){
+      for (int j = 0; j < sizeof(circle[i])/sizeof(circle[i][0]); j ++){
+          
+         pixels.setPixelColor(circle[i][j], color);
+         if (i>0){
+             pixels.setPixelColor(circle[i-1][j], none);
+         }
+         //pixels.show();
+      }
+      pixels.setBrightness(50);
+      pixels.show();   // Send the updated pixel colors to the hardware.
+      delay(DELAYVAL); // Pause before next pass through loop
+      if(i == 5){
+        for (int j = 0; j < sizeof(circle[i])/sizeof(circle[i][0]); j ++){
+          pixels.setPixelColor(circle[i][j], none);
+        }
+      }
+    }
+  }
+
+  void zoomInOut(uint32_t color){
+     for (int i = (sizeof(circle)/sizeof(circle[0])); i >= 0; i --){
+      for (int j = sizeof(circle[i])/sizeof(circle[i][0]); j >= 0; j --){
+          
+         pixels.setPixelColor(circle[i][j], color);
+         if (i<(sizeof(circle)/sizeof(circle[0]))){
+            pixels.setPixelColor(circle[i+1][j], none);
+         }
+      }
+      pixels.setBrightness(50);
+      pixels.show();   // Send the updated pixel colors to the hardware.
+      delay(DELAYVAL); // Pause before next pass through loop
+      if(i == 0){
+        for (int j = 0; j < sizeof(circle[i])/sizeof(circle[i][0]); j ++){
+          pixels.setPixelColor(circle[i][j], none);
+        }
+      }
     }
   }
 
