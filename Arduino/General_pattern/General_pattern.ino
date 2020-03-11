@@ -3,6 +3,8 @@
 #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
 #endif
 
+//HALO
+
 Adafruit_NeoPixel pixels(88, 6, NEO_GRB + NEO_KHZ800); //(NUMPIXELS, PIN).
 
 #define DELAYVAL 50 // Time (in milliseconds) to pause between pixels
